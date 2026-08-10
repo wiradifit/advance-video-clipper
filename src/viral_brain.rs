@@ -18,6 +18,8 @@ pub struct ViralClip {
     #[serde(default)]
     pub hook_quote: String,
     #[serde(default)]
+    pub top_clickbait_title: String, // Single-line explosive clickbait header at top of video
+    #[serde(default)]
     pub youtube_title: String,
     #[serde(default)]
     pub tiktok_caption: String,
@@ -38,13 +40,13 @@ pub struct ViralityAnalysis {
 
 const SYSTEM_PROMPT: &str = r#"You are an elite short-form video editor and viral content strategist for TikTok, YouTube Shorts, and Instagram Reels.
 
-Your task is to analyze timestamped video transcripts and extract the most captivating, high-retention segments (20-60 seconds) that maximize watch time, shares, and comments.
+Your task is to analyze timestamped video transcripts and extract the most captivating, high-retention segments (30-45 seconds) that maximize watch time, shares, and comments.
 
-### Virality Evaluation Framework:
-1. **3-Second Hook Rule:** The opening line must stop users mid-scroll through controversy, curiosity gap, shocking revelation, or intense emotion.
-2. **High-Arousal Triggers:** Prioritize content that evokes awe, righteous indignation, humor, curiosity, or unexpected truth.
-3. **Stand-Alone Clarity:** The extracted segment must make complete sense without requiring the rest of the video.
-4. **Loop Mechanics:** The segment should conclude with a punchy conclusion or mind-bending thought that seamlessly loops back to the start.
+### Virality & Short-Form Best Practice Framework (30-45s Rule):
+1. **Optimal Short-Form Duration (30-45 seconds):** Clips in the 30-45 second window achieve maximum algorithm retention (85%+ completion rates and repeat loops).
+2. **Top Clickbait Header Sentence:** Generate an irresistible, 1-line clickbait hook sentence in ALL CAPS with emojis to be displayed at the top of the video (e.g., "DETIK-DETIK STAGER COR JATUH TIMPA TUMBAL! 😱").
+3. **3-Second Hook Rule:** The opening line must stop users mid-scroll through controversy, curiosity gap, or intense emotion.
+4. **Stand-Alone Narrative:** The clip must tell a complete story with a satisfying payoff or loop back to the start.
 
 ### JSON Output Schema:
 Return ONLY a valid JSON object matching this exact structure:
@@ -55,10 +57,11 @@ Return ONLY a valid JSON object matching this exact structure:
       "clip_id": "clip_1",
       "start_time": "MM:SS",
       "end_time": "MM:SS",
-      "virality_score": 9.5,
-      "category": "Controversial / Insight / Humor / Story",
+      "virality_score": 9.8,
+      "category": "Horror / Insight / Story / Controversy",
+      "top_clickbait_title": "SINGLE LINE ALL-CAPS CLICKBAIT HOOK TITLE WITH EMOJI (MAX 60 CHARS)",
       "hook_quote": "Exact punchy quote in the first 3 seconds",
-      "youtube_title": "High CTR YouTube Shorts Title (Under 60 chars)",
+      "youtube_title": "High CTR YouTube Shorts Title",
       "tiktok_caption": "Engaging TikTok caption with 3-5 trending hashtags",
       "shareability_rationale": "Why this specific clip will generate shares and saves"
     }
@@ -86,7 +89,8 @@ Maximum Clip Duration: {} seconds
 Timestamped Transcript:
 {}
 
-Extract the top viral clips that will perform best on TikTok and YouTube Shorts.
+Extract the top viral clips (30-45 seconds optimal duration).
+Make sure to generate a high-converting, irresistible single-line ALL-CAPS clickbait title for `top_clickbait_title`.
 Return ONLY a valid JSON object with the "clips" key containing the list of clips."#,
         video_title,
         min_clips,

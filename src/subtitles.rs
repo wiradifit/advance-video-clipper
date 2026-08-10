@@ -70,6 +70,7 @@ pub fn build_karaoke_ass(
     let primary_ass = format!("&H00{}&", preset.primary_color_bgr);
 
     // WrapStyle: 2 strictly prevents line-breaking / stacking across all ASS renderers
+    // HeaderTag: Top-Center alignment (8), MarginV: 240, Size: 40pt with thick black outline for clickbait title
     let ass_header = format!(
         r#"[Script Info]
 ScriptType: v4.00+
@@ -81,7 +82,7 @@ ScaledBorderAndShadow: yes
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: MainStyle,{},{},{},&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,100,100,2.0,0,1,7.5,2.5,2,30,30,{},1
-Style: HeaderTag,{},38,&H00FFFFFF,&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,100,100,1,0,1,4.0,1.5,8,30,30,320,1
+Style: HeaderTag,{},40,&H00FFFFFF,&H0000E6FF,&H00000000,&H90000000,-1,0,0,0,100,100,1.2,0,1,5.0,2.0,8,30,30,240,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -96,9 +97,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     let mut events = Vec::new();
 
     if !header_tag.is_empty() {
+        let clean_header = header_tag.to_uppercase();
         events.push(format!(
             "Dialogue: 0,0:00:00.00,1:00:00.00,HeaderTag,,0,0,0,,{}",
-            header_tag
+            clean_header
         ));
     }
 

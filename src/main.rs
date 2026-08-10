@@ -44,7 +44,7 @@ struct Cli {
     #[arg(short, long)]
     out_dir: Option<PathBuf>,
 
-    /// Language code for Whisper STT (e.g. en, id, es; default: auto-detect)
+    /// Language code for Whisper STT (e.g. en, id, es; default: id for local podcasts)
     #[arg(short, long)]
     lang: Option<String>,
 
@@ -102,6 +102,7 @@ async fn main() -> Result<()> {
             clip.category.magenta()
         );
         println!("   ⏱️  Timestamp: {} -> {}", clip.start_time.white(), clip.end_time.white());
+        println!("   🚨 Top Clickbait Header: {}", clip.top_clickbait_title.red().bold());
         println!("   🎯 Hook (0-3s): \"{}\"", clip.hook_quote.italic());
         println!("   📺 YouTube Shorts Title: {}", clip.youtube_title.bold());
         println!("   📱 TikTok Caption: {}", clip.tiktok_caption);
@@ -164,8 +165,12 @@ async fn main() -> Result<()> {
             .context("Whisper STT failed")?;
         println!("{} words extracted.", words.len().to_string().green());
 
-        // Step C: Build Subtitles
-        let header_tag = format!("🔥 {}", clip.category.to_uppercase());
+        // Step C: Build Subtitles with Top Single-Line Clickbait Header
+        let header_tag = if !clip.top_clickbait_title.is_empty() {
+            clip.top_clickbait_title.clone()
+        } else {
+            format!("🔥 {}", clip.category.to_uppercase())
+        };
         build_karaoke_ass(&words, &ass_file, &preset, &header_tag)?;
 
         // Step D: Render 1080x1920 video

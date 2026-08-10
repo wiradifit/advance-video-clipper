@@ -49,8 +49,8 @@ impl Config {
             output_width: 1080,
             output_height: 1920,
             fps: 30,
-            max_clip_duration: 60,
-            min_clip_duration: 20,
+            max_clip_duration: 45, // Best-practice viral short-form duration (30-45s sweet spot)
+            min_clip_duration: 30,
         }
     }
 }
