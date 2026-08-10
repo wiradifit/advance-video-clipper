@@ -1,0 +1,10 @@
+.DS_Store
+.env
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.mp4
+*.wav
+*.ass
+output_clips/
