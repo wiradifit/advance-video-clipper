@@ -8,3 +8,4 @@ venv/
 *.wav
 *.ass
 output_clips/
+target/
