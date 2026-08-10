@@ -3,6 +3,7 @@ use std::io::Write;
 use std::path::Path;
 use anyhow::Result;
 use crate::whisper::WordTimestamp;
+use crate::filter::filter_sensitive_text;
 
 #[derive(Debug, Clone)]
 pub struct SubtitlePreset {
@@ -97,24 +98,28 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     let mut events = Vec::new();
 
     if !header_tag.is_empty() {
-        let clean_header = header_tag.to_uppercase();
+        // Apply Social Media Word Filter to top clickbait title header
+        let clean_header = filter_sensitive_text(&header_tag.to_uppercase());
         events.push(format!(
             "Dialogue: 0,0:00:00.00,1:00:00.00,HeaderTag,,0,0,0,,{}",
             clean_header
         ));
     }
 
-    // Render STRICTLY 1 single word per event card
+    // Render STRICTLY 1 single word per event card with Social Media Word Filtering
     for (i, w) in words.iter().enumerate() {
-        let w_text = w
+        let raw_word = w
             .word
             .to_uppercase()
             .trim_matches(|c: char| c.is_ascii_punctuation())
             .to_string();
 
-        if w_text.is_empty() {
+        if raw_word.is_empty() {
             continue;
         }
+
+        // Apply Social Media Trigger & Profanity Filter (e.g. MATI -> M*TI, DARAH -> D*RAH, KILL -> K*LL)
+        let filtered_word = filter_sensitive_text(&raw_word);
 
         let start_sec = w.start;
         let mut end_sec = w.end;
@@ -137,7 +142,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
         events.push(format!(
             "Dialogue: 1,{},{},MainStyle,,0,0,0,,{}",
-            start_str, end_str, w_text
+            start_str, end_str, filtered_word
         ));
     }
 

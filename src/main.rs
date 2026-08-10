@@ -2,6 +2,7 @@ mod config;
 mod transcript;
 mod viral_brain;
 mod whisper;
+mod filter;
 mod subtitles;
 mod renderer;
 
@@ -165,7 +166,7 @@ async fn main() -> Result<()> {
             .context("Whisper STT failed")?;
         println!("{} words extracted.", words.len().to_string().green());
 
-        // Step C: Build Subtitles with Top Single-Line Clickbait Header
+        // Step C: Build Subtitles with Top Single-Line Clickbait Header & Word Filtering
         let header_tag = if !clip.top_clickbait_title.is_empty() {
             clip.top_clickbait_title.clone()
         } else {
