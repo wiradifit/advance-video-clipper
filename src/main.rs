@@ -183,19 +183,60 @@ async fn main() -> Result<()> {
         // Step E: Save to final destination
         std::fs::copy(&temp_render, &final_output)?;
 
-        println!("   ✅ Output saved: {}\n", final_output.display().to_string().cyan().bold());
+        // Step F: Generate Copy-Paste Social Post Metadata File with Source Attribution & Filtered Text
+        let meta_filename = format!("{}_{}_{}s_{}s.txt", video_id, clip.clip_id, start_sec as u64, end_sec as u64);
+        let meta_output = out_dir.join(&meta_filename);
 
-        results.push((clip.clone(), final_output));
+        let filtered_title = filter::filter_sensitive_text(&clip.youtube_title);
+        let filtered_caption = filter::filter_sensitive_text(&clip.tiktok_caption);
+        let filtered_header = filter::filter_sensitive_text(&clip.top_clickbait_title);
+
+        let social_post_content = format!(
+            "======================================================================\n\
+             📱 READY-TO-POST SOCIAL MEDIA CAPTION & METADATA\n\
+             ======================================================================\n\n\
+             📺 YOUTUBE SHORTS TITLE:\n\
+             {}\n\n\
+             🚨 ON-SCREEN TOP CLICKBAIT HEADER:\n\
+             {}\n\n\
+             📱 TIKTOK / REELS / SHORTS CAPTION:\n\
+             {}\n\n\
+             📌 SOURCE ATTRIBUTION:\n\
+             Source Video: {}\n\n\
+             📊 VIRALITY SCORECARD:\n\
+             Score: {:.1}/10 | Category: {}\n\
+             Segment: {} -> {}\n\
+             Rationale: {}\n\
+             ======================================================================\n",
+            filtered_title,
+            filtered_header,
+            filtered_caption,
+            video_url,
+            clip.virality_score,
+            clip.category,
+            clip.start_time,
+            clip.end_time,
+            clip.shareability_rationale,
+        );
+
+        std::fs::write(&meta_output, &social_post_content)?;
+
+        println!("   ✅ Video Clip Saved: {}", final_output.display().to_string().cyan().bold());
+        println!("   📝 Metadata & Caption File Saved: {}\n", meta_output.display().to_string().yellow().bold());
+
+        results.push((clip.clone(), final_output, meta_output, social_post_content));
     }
 
     println!("{}", "======================================================================".cyan().bold());
-    println!("{}", "🎉 ALL VIRAL SHORTS SUCCESSFULLY GENERATED!".green().bold());
+    println!("{}", "🎉 ALL VIRAL SHORTS & CAPTIONS SUCCESSFULLY GENERATED!".green().bold());
     println!("{}", "======================================================================".cyan().bold());
 
-    for (clip, path) in &results {
-        println!("\n📌 Title: {}", clip.youtube_title.bold());
-        println!("   Virality Score: {}/10 | Category: {}", format!("{:.1}", clip.virality_score).green(), clip.category);
-        println!("   📁 File: {}", path.display().to_string().yellow());
+    for (clip, video_path, meta_path, post_text) in &results {
+        println!("\n{}", "──────────────────────────────────────────────────────────────────────".blue());
+        println!("🔥 CLIP: {}", clip.clip_id.yellow().bold());
+        println!("📁 Video File: {}", video_path.display().to_string().cyan());
+        println!("📝 Caption File: {}", meta_path.display().to_string().yellow());
+        println!("\n{}", post_text.white());
     }
 
     Ok(())
