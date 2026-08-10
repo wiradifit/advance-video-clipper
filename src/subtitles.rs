@@ -15,34 +15,35 @@ pub struct SubtitlePreset {
     pub margin_v: u32,
 }
 
+// Strictly 1-line, 2-word rapid rhythmic bursts with Electric Yellow highlight
 pub const PRESET_HORMOZI: SubtitlePreset = SubtitlePreset {
     name: "hormozi",
     font_name: "Arial Black",
-    font_size: 74,
-    highlight_color_bgr: "00E6FF", // Electric Yellow
+    font_size: 66,
+    highlight_color_bgr: "00E6FF", // Electric Yellow (&H0000E6FF)
     primary_color_bgr: "FFFFFF",
-    words_per_card: 3,
-    margin_v: 740,
+    words_per_card: 2, // Strictly 2 words per card to guarantee 1 single line
+    margin_v: 720,
 };
 
 pub const PRESET_CYBER_CYAN: SubtitlePreset = SubtitlePreset {
     name: "cyber_cyan",
     font_name: "Trebuchet MS",
-    font_size: 68,
+    font_size: 64,
     highlight_color_bgr: "FFFF00", // Cyan
     primary_color_bgr: "FFFFFF",
-    words_per_card: 3,
-    margin_v: 740,
+    words_per_card: 2,
+    margin_v: 720,
 };
 
 pub const PRESET_NEON_GREEN: SubtitlePreset = SubtitlePreset {
     name: "neon_green",
     font_name: "Impact",
-    font_size: 76,
+    font_size: 68,
     highlight_color_bgr: "66FF00", // Lime Green
     primary_color_bgr: "FFFFFF",
     words_per_card: 2,
-    margin_v: 740,
+    margin_v: 720,
 };
 
 pub fn get_preset_by_name(name: &str) -> SubtitlePreset {
@@ -73,17 +74,19 @@ pub fn build_karaoke_ass(
     let primary_ass = format!("&H00{}&", preset.primary_color_bgr);
     let highlight_ass = format!("&H00{}&", preset.highlight_color_bgr);
 
+    // WrapStyle: 2 strictly prevents line-breaking / stacking across all ASS renderers
     let ass_header = format!(
         r#"[Script Info]
 ScriptType: v4.00+
 PlayResX: 1080
 PlayResY: 1920
+WrapStyle: 2
 ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: MainStyle,{},{},{},&H000000FF,&H00000000,&H90000000,-1,0,0,0,100,100,1.5,0,1,6.5,2.5,2,40,40,{},1
-Style: HeaderTag,{},38,{},&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,100,100,1,0,1,4.0,1.5,8,40,40,320,1
+Style: MainStyle,{},{},{},&H000000FF,&H00000000,&H90000000,-1,0,0,0,100,100,1.5,0,1,6.0,2.0,2,30,30,{},1
+Style: HeaderTag,{},36,{},&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,100,100,1,0,1,4.0,1.5,8,30,30,320,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -105,7 +108,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         ));
     }
 
-    // Group words into chunks
+    // Group words into strictly 2-word single-line chunks
     let chunks: Vec<&[WordTimestamp]> = words.chunks(preset.words_per_card).collect();
 
     for chunk in chunks {
@@ -117,7 +120,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                     .trim_matches(|c: char| c.is_ascii_punctuation())
                     .to_string()
             })
+            .filter(|w| !w.is_empty())
             .collect();
+
+        if chunk_words_text.is_empty() {
+            continue;
+        }
 
         for (active_idx, active_word) in chunk.iter().enumerate() {
             let w_start = active_word.start;

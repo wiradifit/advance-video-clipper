@@ -18,7 +18,7 @@ pub fn extract_word_timestamps(
     whisper_model: &str,
 ) -> Result<Vec<WordTimestamp>> {
     let python_bin = find_python_binary();
-    let lang_code = language.unwrap_or("None");
+    let lang_code = language.unwrap_or("id"); // Default to Indonesian for highest accuracy on local podcasts
     let py_script = format!(
         r#"
 import json, sys
@@ -26,7 +26,7 @@ from faster_whisper import WhisperModel
 
 try:
     model = WhisperModel('{model}', device='cpu', compute_type='int8')
-    lang_arg = None if '{lang}' == 'None' else '{lang}'
+    lang_arg = None if '{lang}' in ['None', 'auto'] else '{lang}'
     segments, info = model.transcribe(
         r'{media_path}',
         language=lang_arg,
