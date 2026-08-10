@@ -9,40 +9,36 @@ pub struct SubtitlePreset {
     pub name: &'static str,
     pub font_name: &'static str,
     pub font_size: u32,
-    pub highlight_color_bgr: &'static str, // BGR hex without &H
     pub primary_color_bgr: &'static str,
     pub words_per_card: usize,
     pub margin_v: u32,
 }
 
-// Strictly 1-line, 2-word rapid rhythmic bursts with Electric Yellow highlight
+// STRICT SINGLE-WORD PRESETS (Zero line wrapping, zero vertical stacking)
 pub const PRESET_HORMOZI: SubtitlePreset = SubtitlePreset {
     name: "hormozi",
     font_name: "Arial Black",
-    font_size: 66,
-    highlight_color_bgr: "00E6FF", // Electric Yellow (&H0000E6FF)
-    primary_color_bgr: "FFFFFF",
-    words_per_card: 2, // Strictly 2 words per card to guarantee 1 single line
+    font_size: 84,
+    primary_color_bgr: "00E6FF", // Electric Yellow (&H0000E6FF)
+    words_per_card: 1, // Strictly 1 single word per event card
     margin_v: 720,
 };
 
 pub const PRESET_CYBER_CYAN: SubtitlePreset = SubtitlePreset {
     name: "cyber_cyan",
     font_name: "Trebuchet MS",
-    font_size: 64,
-    highlight_color_bgr: "FFFF00", // Cyan
-    primary_color_bgr: "FFFFFF",
-    words_per_card: 2,
+    font_size: 80,
+    primary_color_bgr: "FFFF00", // Cyan
+    words_per_card: 1,
     margin_v: 720,
 };
 
 pub const PRESET_NEON_GREEN: SubtitlePreset = SubtitlePreset {
     name: "neon_green",
     font_name: "Impact",
-    font_size: 68,
-    highlight_color_bgr: "66FF00", // Lime Green
-    primary_color_bgr: "FFFFFF",
-    words_per_card: 2,
+    font_size: 88,
+    primary_color_bgr: "66FF00", // Lime Green
+    words_per_card: 1,
     margin_v: 720,
 };
 
@@ -72,7 +68,6 @@ pub fn build_karaoke_ass(
     header_tag: &str,
 ) -> Result<()> {
     let primary_ass = format!("&H00{}&", preset.primary_color_bgr);
-    let highlight_ass = format!("&H00{}&", preset.highlight_color_bgr);
 
     // WrapStyle: 2 strictly prevents line-breaking / stacking across all ASS renderers
     let ass_header = format!(
@@ -85,8 +80,8 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: MainStyle,{},{},{},&H000000FF,&H00000000,&H90000000,-1,0,0,0,100,100,1.5,0,1,6.0,2.0,2,30,30,{},1
-Style: HeaderTag,{},36,{},&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,100,100,1,0,1,4.0,1.5,8,30,30,320,1
+Style: MainStyle,{},{},{},&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,100,100,2.0,0,1,7.5,2.5,2,30,30,{},1
+Style: HeaderTag,{},38,&H00FFFFFF,&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,100,100,1,0,1,4.0,1.5,8,30,30,320,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -95,8 +90,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         preset.font_size,
         primary_ass,
         preset.margin_v,
-        preset.font_name,
-        highlight_ass
+        preset.font_name
     );
 
     let mut events = Vec::new();
@@ -108,54 +102,41 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         ));
     }
 
-    // Group words into strictly 2-word single-line chunks
-    let chunks: Vec<&[WordTimestamp]> = words.chunks(preset.words_per_card).collect();
+    // Render STRICTLY 1 single word per event card
+    for (i, w) in words.iter().enumerate() {
+        let w_text = w
+            .word
+            .to_uppercase()
+            .trim_matches(|c: char| c.is_ascii_punctuation())
+            .to_string();
 
-    for chunk in chunks {
-        let chunk_words_text: Vec<String> = chunk
-            .iter()
-            .map(|w| {
-                w.word
-                    .to_uppercase()
-                    .trim_matches(|c: char| c.is_ascii_punctuation())
-                    .to_string()
-            })
-            .filter(|w| !w.is_empty())
-            .collect();
-
-        if chunk_words_text.is_empty() {
+        if w_text.is_empty() {
             continue;
         }
 
-        for (active_idx, active_word) in chunk.iter().enumerate() {
-            let w_start = active_word.start;
-            let w_end = active_word.end;
+        let start_sec = w.start;
+        let mut end_sec = w.end;
 
-            let event_end = if active_idx < chunk.len() - 1 {
-                let next_start = chunk[active_idx + 1].start;
-                w_end.max(next_start)
-            } else {
-                w_end + 0.15
-            };
-
-            let start_str = format_ass_time(w_start);
-            let end_str = format_ass_time(event_end);
-
-            let mut styled_line_parts = Vec::new();
-            for (idx, text) in chunk_words_text.iter().enumerate() {
-                if idx == active_idx {
-                    styled_line_parts.push(format!(r"{{\c{}}}{}{{\c{}}}", highlight_ass, text, primary_ass));
-                } else {
-                    styled_line_parts.push(text.clone());
-                }
+        // Ensure start_sec < end_sec and zero overlap with next word
+        if i < words.len() - 1 {
+            let next_start = words[i + 1].start;
+            if end_sec > next_start {
+                end_sec = next_start;
             }
-
-            let line_text = styled_line_parts.join(" ");
-            events.push(format!(
-                "Dialogue: 1,{},{},MainStyle,,0,0,0,,{}",
-                start_str, end_str, line_text
-            ));
+            if end_sec <= start_sec {
+                end_sec = start_sec + 0.12;
+            }
+        } else {
+            end_sec += 0.15;
         }
+
+        let start_str = format_ass_time(start_sec);
+        let end_str = format_ass_time(end_sec);
+
+        events.push(format!(
+            "Dialogue: 1,{},{},MainStyle,,0,0,0,,{}",
+            start_str, end_str, w_text
+        ));
     }
 
     let mut file = File::create(output_ass_path)?;
