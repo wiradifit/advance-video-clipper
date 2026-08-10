@@ -1,0 +1,14 @@
+/Users/prawira/Documents/antigravity/advance-video-clipper/target/release/deps/serde-e5c9518d5c5e2fd3.d: /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/prawira/Documents/antigravity/advance-video-clipper/target/release/build/serde-cf983305d3e1b233/out/private.rs
+
+/Users/prawira/Documents/antigravity/advance-video-clipper/target/release/deps/libserde-e5c9518d5c5e2fd3.rlib: /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/prawira/Documents/antigravity/advance-video-clipper/target/release/build/serde-cf983305d3e1b233/out/private.rs
+
+/Users/prawira/Documents/antigravity/advance-video-clipper/target/release/deps/libserde-e5c9518d5c5e2fd3.rmeta: /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/prawira/Documents/antigravity/advance-video-clipper/target/release/build/serde-cf983305d3e1b233/out/private.rs
+
+/Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs:
+/Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs:
+/Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs:
+/Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs:
+/Users/prawira/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs:
+/Users/prawira/Documents/antigravity/advance-video-clipper/target/release/build/serde-cf983305d3e1b233/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/prawira/Documents/antigravity/advance-video-clipper/target/release/build/serde-cf983305d3e1b233/out

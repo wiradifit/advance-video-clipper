@@ -12,28 +12,39 @@ Built for maximum speed, zero OOM panics, low memory footprint (<35 MB RAM), and
 * **🧠 2026 AI Virality Brain:** Evaluates full timestamped transcripts using OpenAI / DeepSeek models to discover 30-45s viral goldmines based on hook strength, emotional arousal, curiosity gaps, and loop potential.
 * **🚨 Top Single-Line Clickbait Header:** Generates an irresistible, ALL-CAPS single-line clickbait hook sentence with emojis rendered at the top of the video (`Y=240`) to maximize viewer CTR and curiosity.
 * **💬 Strict 1-Word Subtitle Display:** Renders strictly **1 single word per card** (`WrapStyle: 2`, `Y=1200`) in **Electric Yellow (`#FFE600`)** synchronously with speech. Zero line wrapping, zero vertical stacking, zero visual fatigue.
-* **🛡️ Social Media Content Filter (Censorship Guard):** Built-in automatic filtering for trigger & profanity words in **Bahasa Indonesia** (`MATI` $\rightarrow$ `M*TI`, `DARAH` $\rightarrow$ `D*RAH`, `TUMBAL` $\rightarrow$ `TUMB*L`, `BUNUH` $\rightarrow$ `B*NUH`) and **English** (`DEAD` $\rightarrow$ `D*AD`, `KILL` $\rightarrow$ `K*LL`, `BLOOD` $\rightarrow$ `BL*OD`, `SUICIDE` $\rightarrow$ `S*ICIDE`). Prevents algorithm shadowbans and demonetization on TikTok, Shorts, and Reels.
+* **🛡️ Social Media Content Filter (250+ Words):** Built-in automatic masking for trigger & profanity words in **Bahasa Indonesia** (`MATI` → `M**I`, `DARAH` → `D***H`, `TUMBAL` → `T****L`, `BUNUH` → `B***H`) and **English** (`DEAD` → `D**D`, `KILL` → `K**L`, `FUCK` → `F**K`, `SUICIDE` → `S*****E`). Censoring shows only first & last letter, middle chars replaced with `*`. Sources: LDNOOBW, Google Profanity, drizki/indonesian-badwords, TikTok & YouTube content policies.
 * **🎙️ `stable-ts` Indonesian Word Alignment:** Integrates OpenAI Whisper with Dynamic Time Warping (DTW) and VAD filtering for precise Indonesian speech recognition.
 * **✂️ Byte-Range Stream Slicing:** Uses `yt-dlp` stream slicing (`--download-sections`) to download only the 35-second viral segment (~10 MB), bypassing 5+ GB full video downloads.
 * **📐 Full-Bleed 1080x1920 Framing:** Center-crops videos to vertical 9:16 aspect ratio without heavy 2D blur padding.
 
 ---
 
-## 🛡️ Social Media Trigger & Profanity Filter List
+## 🛡️ Social Media Trigger & Profanity Filter (250+ Words)
 
-The filter automatically masks sensitive words across subtitles and clickbait titles:
+The engine automatically censors sensitive/triggering words across subtitles AND clickbait header titles.
 
-| Language | Raw Spoken / Input Word | Censored On-Screen Output | Reason |
-|---|---|---|---|
-| 🇮🇩 Indonesian | `MATI`, `KEMATIAN` | `M*TI`, `KEM*TIAN` | Prevents violence/death trigger shadowban |
-| 🇮🇩 Indonesian | `DARAH` | `D*RAH` | Gore / violence policy guard |
-| 🇮🇩 Indonesian | `TUMBAL` | `TUMB*L` | Extremist / occult trigger guard |
-| 🇮🇩 Indonesian | `BUNUH`, `PEMBUNUH` | `B*NUH`, `PEMB*NUH` | Violence & harm policy guard |
-| 🇮🇩 Indonesian | `ANJING`, `BANGSAT`, `KONTOL` | `ANJ*NG`, `BANGS*T`, `KONT*L` | Profanity filter |
-| 🇬🇧 English | `DEAD`, `DEATH`, `DIE` | `D*AD`, `D*ATH`, `D*E` | Social media policy guard |
-| 🇬🇧 English | `KILL`, `KILLED`, `MURDER` | `K*LL`, `K*LLED`, `M*RDER` | Violence policy guard |
-| 🇬🇧 English | `BLOOD`, `SUICIDE` | `BL*OD`, `S*ICIDE` | Harm policy guard |
-| 🇬🇧 English | `FUCK`, `SHIT`, `BITCH` | `F*CK`, `SH*T`, `B*TCH` | Profanity filter |
+**Masking Rule:** Only the **first and last** letter are visible. All middle characters are replaced with `*`.
+
+> **Dictionary Sources:** [LDNOOBW](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words), [google-profanity-words](https://github.com/coffee-and-fun/google-profanity-words), [indonesian-badwords](https://github.com/drizki/indonesian-badwords), [kasar](https://github.com/asruldev/kasar), TikTok Community Guidelines, YouTube Advertiser-Friendly Content Guidelines.
+
+### 🇮🇩 Bahasa Indonesia Filtered Words
+
+| Category | Examples (Raw → Censored) | Count |
+|---|---|---|
+| Violence & Death | `MATI` → `M**I`, `BUNUH` → `B***H`, `DARAH` → `D***H`, `MAYAT` → `M***T` | 26 |
+| Occult / Superstition | `SANTET` → `S****T`, `SETAN` → `S***N`, `POCONG` → `P****G` | 13 |
+| Profanity & Vulgar | `ANJING` → `A****G`, `BANGSAT` → `B*****T`, `KONTOL` → `K****L`, `GOBLOK` → `G****K` | 81 |
+| Self-Harm & Drugs | `NARKOBA` → `N*****A`, `PERKOSA` → `P*****A`, `GANJA` → `G***A` | 8 |
+
+### 🇬🇧 English Filtered Words
+
+| Category | Examples (Raw → Censored) | Count |
+|---|---|---|
+| Violence & Death | `DEAD` → `D**D`, `KILL` → `K**L`, `MURDER` → `M****R`, `SUICIDE` → `S*****E` | 30 |
+| Sexual / Adult | `FUCK` → `F**K`, `SHIT` → `S**T`, `BITCH` → `B***H`, `PORN` → `P**N` | 87 |
+| Hate Speech / Slurs | `NIGGER` → `N****R`, `FAGGOT` → `F****T`, `RETARD` → `R****D` | 19 |
+| Drugs / Self-Harm | `COCAINE` → `C*****E`, `HEROIN` → `H****N`, `OVERDOSE` → `O******E` | 17 |
+| Weapons / Extremism | `TERRORIST` → `T*******T`, `BOMB` → `B**B`, `SHOOTING` → `S******G` | 9 |
 
 ---
 
